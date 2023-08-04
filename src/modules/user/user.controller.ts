@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Put, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.schema';
 import { ApiResponse } from '@nestjs/swagger';
@@ -18,5 +18,35 @@ export class UserController {
     const createdUser = await this.userService.create(userData);
     console.log('Created user:', createdUser);
     return createdUser;
+  }
+
+  // ---------------------------------------------
+
+  @Get('/')
+  @ApiResponse({
+    status: 200,
+    description: 'The records have been successfully fetched.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async getUsers(): Promise<User[]> {
+    return this.userService.findAll();
+  }
+
+  // ---------------------------------------------
+
+  @Put('/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully updated',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden. ',
+  })
+  async updateUser(
+    @Param('id') id: string,
+    @Body() userData: User,
+  ): Promise<User> {
+    return this.userService.update(id, userData);
   }
 }
