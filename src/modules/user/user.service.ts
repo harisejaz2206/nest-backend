@@ -47,4 +47,10 @@ export class UserService {
     }
     return this.userModel.findByIdAndUpdate(id, userData, { new: true }).exec();
   }
+
+  // ---------------------------------------------
+
+  async delete(id: string): Promise<void> {
+    await this.userModel.findByIdAndDelete(id).exec();
+  }
 }

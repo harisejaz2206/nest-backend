@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Put, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.schema';
 import { ApiResponse } from '@nestjs/swagger';
@@ -48,5 +56,17 @@ export class UserController {
     @Body() userData: User,
   ): Promise<User> {
     return this.userService.update(id, userData);
+  }
+
+  // ---------------------------------------------
+
+  @Delete('/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'The record has been successfully deleted.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async deleteUser(@Param('id') id: string): Promise<void> {
+    return this.userService.delete(id);
   }
 }

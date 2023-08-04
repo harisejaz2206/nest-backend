@@ -12,12 +12,12 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Prop()
+  @Prop({ unique: true })
   @IsNotEmpty()
   @MinLength(6)
   username: string;
 
-  @Prop()
+  @Prop({ unique: true })
   @IsEmail()
   @MaxLength(30)
   email: string;
