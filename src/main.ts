@@ -11,6 +11,7 @@ async function bootstrap() {
     .setTitle('Making User CRUD')
     .setDescription('The user API description')
     .setVersion('1.1')
+    .addBearerAuth()
     .addTag('user')
     .build();
   const document = SwaggerModule.createDocument(app, config);

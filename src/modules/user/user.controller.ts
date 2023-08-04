@@ -6,51 +6,54 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.schema';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBody } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create.dto';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * Creates a new user.
+   *
+   * @param {User} userData - The data for the new user.
+   * @returns {Promise<User>} A promise that resolves with the created user.
+   */
   @Post('/')
-  @ApiResponse({
-    status: 201,
-    description: 'The record has been successfully created.',
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async createUser(@Body() userData: User): Promise<User> {
-    console.log('Received user data:', userData);
-    const createdUser = await this.userService.create(userData);
-    console.log('Created user:', createdUser);
-    return createdUser;
+  @ApiBody({ type: CreateUserDto })
+  @ApiOperation({ description: 'Create new user' })
+  async createUser(@Body() userData: CreateUserDto): Promise<User> {
+    return this.userService.create(userData);
   }
 
-  // ---------------------------------------------
+  /**
+   * Fetches all users.
+   *
+   * @returns {Promise<User[]>} A promise that resolves with an array of all users.
+   */
 
   @Get('/')
-  @ApiResponse({
-    status: 200,
-    description: 'The records have been successfully fetched.',
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async getUsers(): Promise<User[]> {
     return this.userService.findAll();
   }
 
-  // ---------------------------------------------
-
+  /**
+   * Updates a user.
+   *
+   * @param {string} id - The ID of the user to update.
+   * @param {User} userData - The new data for the user.
+   * @returns {Promise<User>} A promise that resolves with the updated user.
+   */
   @Put('/:id')
-  @ApiResponse({
-    status: 200,
-    description: 'The record has been successfully updated',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden. ',
-  })
   async updateUser(
     @Param('id') id: string,
     @Body() userData: User,
@@ -58,15 +61,25 @@ export class UserController {
     return this.userService.update(id, userData);
   }
 
-  // ---------------------------------------------
-
+  /**
+   * Deletes a user.
+   *
+   * @param {string} id - The ID of the user to delete.
+   * @returns {Promise<void>} A promise that resolves when the user has been deleted.
+   */
   @Delete('/:id')
-  @ApiResponse({
-    status: 200,
-    description: 'The record has been successfully deleted.',
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async deleteUser(@Param('id') id: string): Promise<void> {
     return this.userService.delete(id);
+  }
+
+  /**
+   * Fetches a user by their ID.
+   *
+   * @param {string} id - The ID of the user to fetch.
+   * @returns {Promise<User>} A promise that resolves with the fetched user.
+   */
+  @Get('/:id')
+  async getUserById(@Param('id') id: string): Promise<User> {
+    return this.userService.findById(id);
   }
 }

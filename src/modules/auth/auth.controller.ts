@@ -1,10 +1,10 @@
 // auth.controller.ts
-import { Controller, Post, UseGuards, Body, Request } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { LoginDto } from './dto/login.dto';
-import { ApiBody } from '@nestjs/swagger';
+import { Controller, Post, UseGuards, Request, Get } from '@nestjs/common';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -17,5 +17,11 @@ export class AuthController {
     // Use req.user to access the authenticated user
     // Your logic here
     return this.authService.login(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }
