@@ -53,4 +53,16 @@ export class UserService {
   async delete(id: string): Promise<void> {
     await this.userModel.findByIdAndDelete(id).exec();
   }
+
+  // ---------------------------------------------
+
+  /**
+   * Fetches a user from the database by their username.
+   *
+   * @param {string} username - The username of the user to fetch.
+   * @returns {Promise<User>} A promise that resolves with the fetched user.
+   */
+  async findOne(username: string): Promise<User> {
+    return this.userModel.findOne({ username }).exec();
+  }
 }
